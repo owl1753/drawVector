@@ -3,9 +3,23 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); 
+    display: flex;
+    flex-direction: column;
+    padding: 10%;
 }
 
 svg {
     width: 500px;
     height: 500px;
+}
+
+.generate-button {
+    width: 100px;
+    margin: 0 0 2% 0;
+}
+
+.input-value {
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 2% 0;
 }
