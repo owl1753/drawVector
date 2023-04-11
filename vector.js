@@ -255,9 +255,9 @@ generateButton.addEventListener("click", () => {
         })
 
         switch (i) {
-            case 0: forceText.textContent = 'A: ' + forces[i].toString() + ' (N)'; break;
-            case 1: forceText.textContent = 'B: ' + forces[i].toString() + ' (N)'; break;
-            case 2: forceText.textContent = 'C: ' + forces[i].toString() + ' (N)'; break;
+            case 0: forceText.textContent = 'A: ' + forces[i].toPrecision(3) + ' (N)'; break;
+            case 1: forceText.textContent = 'B: ' + forces[i].toPrecision(3) + ' (N)'; break;
+            case 2: forceText.textContent = 'C: ' + forces[i].toPrecision(3) + ' (N)'; break;
         }
 
         svg.appendChild(forceText)
@@ -269,7 +269,7 @@ generateButton.addEventListener("click", () => {
         'text-anchor': 'right',
         'dominant-baseline': 'middle',
     })
-    forceText.textContent = 'R: ' + Math.sqrt(xValue * xValue + yValue * yValue).toString() + ' (N)'
+    forceText.textContent = 'R: ' + Math.sqrt(xValue * xValue + yValue * yValue).toPrecision(3) + ' (N)'
     svg.appendChild(forceText)
 
     const arcValueText = makeSVGElement('text', {
@@ -279,7 +279,7 @@ generateButton.addEventListener("click", () => {
         'dominant-baseline': 'middle',
     })
 
-    arcValueText.textContent = 'φ: ' + rad2deg(Math.atan2(yValue, xValue)).toString() + ' (deg)'
+    arcValueText.textContent = 'φ: ' + rad2deg(Math.atan2(yValue, xValue)).toPrecision(3) + ' (deg)'
     svg.appendChild(arcValueText)
 
     svg.appendChild(line1);
