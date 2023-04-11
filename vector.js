@@ -8,6 +8,60 @@ const textLength = 15
 
 const generateButton = document.getElementsByClassName("generate-button")[0]
 
+const saveButton = document.getElementById("save")
+
+function polarToCartesian(centerX, centerY, radius, angle) {
+    return {
+      x: centerX + (radius * Math.cos(angle)),
+      y: centerY - (radius * Math.sin(angle))
+    };
+  }
+  
+function describeArc(x, y, radius, startAngle, endAngle){
+    const start = polarToCartesian(x, y, radius, endAngle);
+    const end = polarToCartesian(x, y, radius, startAngle);
+  
+    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+  
+    const d = [
+        "M", start.x, start.y, 
+        "A", radius, radius, 0, largeArcFlag, 1, end.x, end.y
+    ].join(" ");
+  
+    return d;       
+}
+
+saveButton.addEventListener("click", () => {
+    const $svg = document.querySelector("svg");
+
+    const data = new XMLSerializer().serializeToString($svg);
+    const blob = new Blob([data], {type: "image/svg+xml;charset=utf-8"});
+
+    const $canvas = document.createElement("canvas");
+
+    const {width, height} = $svg.getBoundingClientRect();
+
+    $canvas.width = width; 
+    $canvas.height = height;
+
+    const ctx = $canvas.getContext('2d');
+
+    const img = new Image();
+
+    img.onload = (e) => {
+        ctx.drawImage(e.target, 0, 0);
+
+        const $link = document.createElement("a");
+
+        $link.download = "image.png";
+        $link.href = $canvas.toDataURL("image/png");
+
+        $link.click();
+    };
+
+    img.src = URL.createObjectURL(blob);
+})
+
 function makeSVGElement(tag, attrs) {
     var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
     for (var k in attrs) {
@@ -17,13 +71,25 @@ function makeSVGElement(tag, attrs) {
 }
 
 function deg2rad(angle) {
-    return angle * (Math.PI / 180)
+    return angle * (Math.PI / 180.0)
+}
+
+function rad2deg(angle) {
+    return angle * (180.0 / Math.PI)
 }
 
 generateButton.addEventListener("click", () => {
     const svg = document.getElementsByTagName('svg')[0]
 
     svg.replaceChildren()
+
+    const backGround = makeSVGElement('rect', {
+        width: 500,
+        height: 500,
+        fill: 'white',
+    })
+
+    svg.appendChild(backGround)
 
     const axis1 = makeSVGElement('line', { 
         x1: 0,
@@ -112,6 +178,10 @@ generateButton.addEventListener("click", () => {
     y2 = Math.sin(deg2rad(angles[1])) * (forces[1] / maxForce) * SCALE
     x3 = x1 + x2
     y3 = y1 + y2
+
+    const xValue = Math.cos(deg2rad(angles[0])) * forces[0] + Math.cos(deg2rad(angles[1])) * forces[1]
+    const yValue = Math.sin(deg2rad(angles[0])) * forces[0] + Math.sin(deg2rad(angles[1])) * forces[1]
+
     const line1 = makeSVGElement('line', { 
         x1: BASEX + x1,
         y1: BASEY - y1,
@@ -158,11 +228,65 @@ generateButton.addEventListener("click", () => {
             'text-anchor': 'middle',
             'dominant-baseline': 'middle',
         })
-
     text.textContent = "R"
+
+    const arc = makeSVGElement('path', {
+        d: describeArc(BASEX, BASEY, 20, 0, Math.atan2(y3, x3)),
+        stroke: 'black',
+        fill: 'none',
+        'stroke-width': '2px',
+    })
+
+    const arcText = makeSVGElement('text', {
+        x: BASEX + Math.cos(Math.atan2(y3, x3) / 2) * (textLength + 20),
+        y: BASEY - Math.sin(Math.atan2(y3, x3) / 2) * (textLength + 20),
+        'text-anchor': 'middle',
+        'dominant-baseline': 'middle',
+    })
+
+    arcText.textContent = 'φ'
+
+    for (let i = 0; i < 3; i++) {
+        const forceText = makeSVGElement('text', {
+            x: 10,
+            y: 10 + i * 20,
+            'text-anchor': 'right',
+            'dominant-baseline': 'middle',
+        })
+
+        switch (i) {
+            case 0: forceText.textContent = 'A: ' + forces[i].toString() + ' (N)'; break;
+            case 1: forceText.textContent = 'B: ' + forces[i].toString() + ' (N)'; break;
+            case 2: forceText.textContent = 'C: ' + forces[i].toString() + ' (N)'; break;
+        }
+
+        svg.appendChild(forceText)
+    }
+
+    const forceText = makeSVGElement('text', {
+        x: 10,
+        y: 70,
+        'text-anchor': 'right',
+        'dominant-baseline': 'middle',
+    })
+    forceText.textContent = 'R: ' + Math.sqrt(xValue * xValue + yValue * yValue).toString() + ' (N)'
+    svg.appendChild(forceText)
+
+    const arcValueText = makeSVGElement('text', {
+        x: 10,
+        y: 90,
+        'text-anchor': 'right',
+        'dominant-baseline': 'middle',
+    })
+
+    arcValueText.textContent = 'φ: ' + rad2deg(Math.atan2(yValue, xValue)).toString() + ' (deg)'
+    svg.appendChild(arcValueText)
+
     svg.appendChild(line1);
     svg.appendChild(line2);
     svg.appendChild(line3);
     svg.appendChild(arrow);
     svg.appendChild(text);
+    svg.appendChild(arc);
+    svg.appendChild(arcText)
 })

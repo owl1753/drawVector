@@ -7,22 +7,25 @@
     <body>
         <div class="main">
             <div class="input-value">
-                <div style="margin-right: 2%;">m(a): <input type="text"/></div>
-                <div>theta(a): <input type="text"/></div>
+                <div style="margin-right: 2%; display: flex; flex-direction: column;">m(a) (kg): <input type="text"/></div>
+                <div style="display: flex; flex-direction: column;">theta(a) (deg): <input type="text"/></div>
             </div>
             <div class="input-value">
-                <div style="margin-right: 2%;">m(b): <input type="text"/></div>
-                <div>theta(b): <input type="text"/></div>
+                <div style="margin-right: 2%; display: flex; flex-direction: column;">m(b) (kg): <input type="text"/></div>
+                <div style="display: flex; flex-direction: column;">theta(b) (deg): <input type="text"/></div>
             </div>
             <div class="input-value">
-                <div style="margin-right: 2%;">m(c): <input type="text"/></div>
-                <div>theta(c): <input type="text"/></div>
+                <div style="margin-right: 2%; display: flex; flex-direction: column;">m(c) (kg): <input type="text"/></div>
+                <div style="display: flex; flex-direction: column;">theta(c) (deg): <input type="text"/></div>
             </div>
             <button class="generate-button">생성</button>
             <svg>
                 <line x1="250" y1="0" x2="250" y2="500" stroke="black" />
                 <line x1="0" y1="250" x2="500" y2="250" stroke="black" />
+                <path d="M 250.2436879057962 230.00148464999043 
+                         A 20 20 0 0 1 250 230" stroke="black" fill="none" stroke-width="2"></path>
             </svg>
+            <button id="save">저장</button>
         </div>
         <script src="vector.js"></script>
     </body>
